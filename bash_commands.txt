@@ -1,0 +1,32 @@
+cd dockerfile
+docker build -t karolis-docker .
+
+docker run -it --gpus=all -v /home/karolis:/home/karolisu --network host -w /home/karolisu/biomatter -u karolis karolis-docker
+
+mkdir output
+head -n 1 task/features.csv | sed 's/^id/score/' > output/features2.csv
+tail -n +2 task/features.csv | cut -f 2 -d ":" >> output/features2.csv
+
+python scripts/plot-boxplots-and-heatmap.py output/features2.csv output/boxplots-and-heatmap
+
+echo "LEARNING_RATE,DROPOUT_RATE,L2_FACTOR,N_HIDDEN1,N_HIDDEN2,N_EPOCHS,Training_MSE,Validation_MSE,Training_spearman_correlation,Validation_spearman_correlation" > output/stat_headers.csv
+
+--
+
+python -u scripts/train-fully-connected.py output/features2.csv output/logs_opt_reg output/models_opt_reg
+
+cat output/stat_headers.csv output/models_opt_reg/*/statistics.csv > output/models_opt_reg.csv
+
+python scripts/print_df.py output/models_opt_reg.csv
+
+--
+
+python -u scripts/train-fully-connected.py output/features2.csv output/logs_opt_all output/models_opt_all
+
+cat output/stat_headers.csv output/models_opt_all/*/statistics.csv > output/models_opt_all.csv
+
+python scripts/print_df.py output/models_opt_all.csv
+
+--
+
+for i in output/models_opt_best/*; do python scripts/predict-fully-connected.py output/features2.csv $i/best_model $i/best_model/preds; done
