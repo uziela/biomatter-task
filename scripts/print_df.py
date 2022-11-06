@@ -15,7 +15,7 @@ def get_arguments():
     parser = argparse.ArgumentParser()
     #parser.add_argument("input_file", help="Input file", type=str)
     parser.add_argument("input_csv", help="Input csv", type=str)
-    #parser.add_argument("output_file", help="Output plot file", type=str)
+    parser.add_argument("output_csv", help="Output csv", type=str)
     #parser.add_argument("X_label", help="X_label", type=str)
     #parser.add_argument("Y_label", help="Y_label", type=str)
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
@@ -75,7 +75,10 @@ if __name__ == '__main__':
     #print(list_directory(args.input_dir, ends_with=".csv"))
     df = pd.read_csv(args.input_csv)
     #embed()
+    #df = df[df['Validation_spearman_correlation'].notnull()] 
+    #df = df.dropna()
     df = df.sort_values(by='Validation_spearman_correlation', ascending=False)
+    df.to_csv(args.output_csv, index=False)
     print(df[:30])
 
     if args.verbose:

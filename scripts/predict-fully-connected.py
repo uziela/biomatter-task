@@ -39,36 +39,12 @@ def get_arguments():
                     action="store_true")
     return parser.parse_args()
 
-def read_file(input_file):
-    """Read file line by line and do... something"""
-    with open(input_file) as f:
-        while True:
-            line = f.readline()
-            if len(line) == 0:
-                break
-            line = line.rstrip('\n')
-            #print(line)
-            #bits = line.split("\t")
-
 
 def write_file(output_file, out_str):
     """Write out_str to output_file"""
     with open(output_file, "w") as f:
         f.write(out_str)
 
-def list_directory(input_dir, ends_with=""):
-    """ List files in a directory 
-    Arguments:
-        input_dir -- directory to read
-        ends_with -- list only files whose filename end match "ends_with" 
-                     pattern (optional)
-    """
-    files = []
-    for f in os.listdir(input_dir):
-        if os.path.isfile(os.path.join(input_dir, f)) and \
-                          f.endswith(ends_with):
-            files.append(os.path.join(input_dir, f))
-    return files
 
 def spearman(y_true, y_pred):
      return ( tf.py_function(spearmanr, [tf.cast(y_pred, tf.float32), 
